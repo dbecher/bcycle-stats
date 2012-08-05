@@ -1,0 +1,27 @@
+{
+  "name": "bcycle-stats",
+  "version": "0.0.1",
+  "author": "David Becher",
+  "description": "",
+  "contributors": [],
+  "bin": {},
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dbecher/bcycle-stats.git"
+  },
+  "keywords": [],
+  "dependencies" : {
+    "async": "latest",
+    "mongoose": "latest",
+    "cron": "latest",
+    "express": "latest",
+    "superagent": "latest"
+  },
+  "devDependencies": {},
+  "bundleDependencies": [],
+  "license": "MIT",
+  "engine": {
+    "node": ">=0.8.0"
+  }
+}
