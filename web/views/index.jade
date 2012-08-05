@@ -1,6 +1,12 @@
 extends layout
 
 block content
+  | Station: 
+  select(onchange="setSelectedStation(this.value)")
+    option(value="") All
+    each station in stations
+      option(value=station.id) 
+        != station.name
   #chart
 
 append scripts
@@ -12,10 +18,42 @@ append scripts
         }
     });
     
+    var selectedStation = "", reloadInterval, series;
+    var lastDate;
+    
+    function setSelectedStation(station) {
+      selectedStation = station;
+      lastDate = null;
+      if(reloadInterval) window.clearInterval(reloadInterval);
+      chart.showLoading();
+      onChartInit();
+    }
+    
     function loadData(params, cb) {
+      if(selectedStation != "") params.station = selectedStation;
       $.get('/data', params, function(d) {
         if(cb) cb(d);
       });
+    }
+    
+    function onChartInit() {
+      function interval() {
+        var params = {};
+        if(lastDate) params.from = lastDate;
+        loadData(params, function(d) {
+          if(!lastDate) series.setData(d.data);
+          else {
+            for(var i in d.data) {
+              series.addPoint(d.data[i], false);
+            }
+            series.redraw();
+          }
+          chart.hideLoading();
+          lastDate = d.date;
+          reloadInterval = window.setTimeout(interval, 60000);
+        });
+      }
+      interval();
     }
     
     // Create the chart
@@ -24,23 +62,9 @@ append scripts
             renderTo : 'chart',
             events : {
                 load : function() {
-                  var lastDate, series = this.series[0];
-                  function interval() {
-                    var params = {};
-                    if(lastDate) params.from = lastDate;
-                    loadData(params, function(d) {
-                      if(!lastDate) series.setData(d.data);
-                      else {
-                        for(var i in d.data) {
-                          series.addPoint(d.data[i], false);
-                        }
-                        series.redraw();
-                      }
-                      lastDate = d.date;
-                      window.setTimeout(interval, 60000);
-                    });
-                  }
-                  interval();
+                  series = this.series[0];
+                  this.showLoading();
+                  onChartInit();
                 }
             }
         },
