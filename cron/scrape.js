@@ -4,12 +4,12 @@ var models = require('../models'),
 
 module.exports = function() {
   async.parallel([
-    function getFromDb(cb) {
-      models.Station.find({}, function(err, res) {
-        if(err) return cb(err);
-        cb(null, res);
-      });
-    },
+//     function getFromDb(cb) {
+//       models.Station.find({}, function(err, res) {
+//         if(err) return cb(err);
+//         cb(null, res);
+//       });
+//     },
     function callAPI(cb) {
       request
         .get('http://api.bcycle.com/services/mobile.svc/ListKiosks')
@@ -26,8 +26,9 @@ module.exports = function() {
     }
   ], function updateDB(err, results) {
     if(err) return console.log(err);
-    var db_stations = results[0], api_stations = results[1];
+    var api_stations = results[0];
     var date = new Date();
+    console.log(date.toString());
     async.forEach(api_stations, function(station, cb) {
       models.Station.findOrCreate(station, function(err, model) {
         models.Availability.fromApi(station, model, date, function(err, res) {

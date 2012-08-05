@@ -12,23 +12,35 @@ append scripts
         }
     });
     
+    function loadData(params, cb) {
+      $.get('/data', params, function(d) {
+        if(cb) cb(d);
+      });
+    }
+    
     // Create the chart
     window.chart = new Highcharts.StockChart({
         chart : {
             renderTo : 'chart',
             events : {
                 load : function() {
-                    // set up the updating of the chart each minute
-                    var series = this.series[0];
-                    $.get('/data', function(d) {
-                      series.setData(d.data);
+                  var lastDate, series = this.series[0];
+                  function interval() {
+                    var params = {};
+                    if(lastDate) params.from = lastDate;
+                    loadData(params, function(d) {
+                      if(!lastDate) series.setData(d.data);
+                      else {
+                        for(var i in d.data) {
+                          series.addPoint(d.data[i], false);
+                        }
+                        series.redraw();
+                      }
+                      lastDate = d.date;
+                      window.setTimeout(interval, 60000);
                     });
-                    
-                    //setInterval(function() {
-                    //    var x = (new Date()).getTime(), // current time
-                    //    y = Math.round(Math.random() * 100);
-                    //    series.addPoint([x, y], true, true);
-                    //}, 60000);
+                  }
+                  interval();
                 }
             }
         },

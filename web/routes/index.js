@@ -26,19 +26,21 @@ exports.data = function(req, res) {
   
   var query = models.Availability.find({});
   if(station) query.where('station', station);
-  query.where('date').gte(new Date(from)).lte(new Date(to));
+  query.where('date').gte(from).lte(new Date(to));
   query.sort('date', 1).exec(function(err, availabilities) {
     if(err) return res.json(500, { error: err.message });
     if(!availabilities) availabilities = [];
     var grouped = groupBy(availabilities, function(a) {
       return Date.UTC(a.date.getUTCFullYear(), a.date.getUTCMonth(), a.date.getUTCDate(), a.date.getUTCHours(), a.date.getUTCMinutes());
     });
+    console.log(availabilities.length);
     
     res.type('json');
     res.send(JSON.stringify({
       data: Object.keys(grouped).map(function(utc) {
         return [ parseInt(utc, 10), grouped[utc].reduce(function(i, station) { return i + station.bikes; }, 0) ];
-      })
+      }),
+      date: to
     }));
   });
 }
