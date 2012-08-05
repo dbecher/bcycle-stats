@@ -27,9 +27,10 @@ module.exports = function() {
   ], function updateDB(err, results) {
     if(err) return console.log(err);
     var db_stations = results[0], api_stations = results[1];
+    var date = new Date();
     async.forEach(api_stations, function(station, cb) {
       models.Station.findOrCreate(station, function(err, model) {
-        models.Availability.fromApi(station, model, function(err, res) {
+        models.Availability.fromApi(station, model, date, function(err, res) {
           cb(err);
         });
       });

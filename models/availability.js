@@ -7,13 +7,13 @@ module.exports = function(mongoose) {
     "date": Date
   }, {strict: true});
   
-  Availability.statics.fromApi = function(api_json, station, cb) {
+  Availability.statics.fromApi = function(api_json, station, date, cb) {
     new (this.model('Availability'))({
       station: station,
       bikes: api_json.BikesAvailable,
       docks: api_json.DocksAvailable,
       available: (api_json.Status === 'Active'),
-      date: new Date()
+      date: date
     }).save(cb);
   }
   
