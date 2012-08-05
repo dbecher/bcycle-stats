@@ -1,0 +1,65 @@
+extends layout
+
+block content
+  #chart
+
+append scripts
+  script(type="text/javascript")
+    
+    Highcharts.setOptions({
+        global : {
+            useUTC : false
+        }
+    });
+    
+    // Create the chart
+    window.chart = new Highcharts.StockChart({
+        chart : {
+            renderTo : 'chart',
+            events : {
+                load : function() {
+                    // set up the updating of the chart each minute
+                    var series = this.series[0];
+                    $.get('/data', function(d) {
+                      series.setData(d.data);
+                    });
+                    
+                    //setInterval(function() {
+                    //    var x = (new Date()).getTime(), // current time
+                    //    y = Math.round(Math.random() * 100);
+                    //    series.addPoint([x, y], true, true);
+                    //}, 60000);
+                }
+            }
+        },
+        
+        rangeSelector: {
+            buttons: [{
+                count: 1,
+                type: 'hour',
+                text: '1h'
+            }, {
+                count: 1,
+                type: 'day',
+                text: '1d'
+            }, {
+                type: 'all',
+                text: 'All'
+            }],
+            inputEnabled: false,
+            selected: 0
+        },
+        
+        title : {
+            text : 'Charlotte BCycle Availability'
+        },
+        
+        exporting: {
+            enabled: false
+        },
+        
+        series : [{
+            name : 'Total Bikes',
+            data : []
+        }]
+    });

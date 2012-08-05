@@ -15,8 +15,10 @@
     "async": "latest",
     "mongoose": "latest",
     "cron": "latest",
-    "express": "latest",
-    "superagent": "latest"
+    "superagent": "latest",
+    "express": "3.0.0rc2",
+    "jade": "*",
+    "stylus": "*"
   },
   "devDependencies": {},
   "bundleDependencies": [],
