@@ -17,6 +17,7 @@
     "cron": "latest",
     "superagent": "latest",
     "express": "3.0.0rc2",
+    "connect": "latest",
     "jade": "*",
     "stylus": "*"
   },
